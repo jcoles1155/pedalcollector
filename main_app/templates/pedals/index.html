@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h1>Pedal List</h1>
+
+{% for pedal in pedals %}
+    <div class="card">
+    <div class="card-content">
+        <span class="card-title">{{ pedal.name }}</span>
+        <p>Type: {{ pedal.type }}</p>
+        <p>Description: {{ pedal.description }}</p>
+        {% if pedal.price > 0 %}
+        <p>Price: {{ pedal.price }}</p>
+        {% else %}
+        <p>Age: Kitten</p>
+        {% endif %}
+    </div>
+</div>
+{% endfor %}
+
+{% endblock %}
