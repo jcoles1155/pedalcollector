@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h1>Pedal Details</h1>
+
+<div class="card">
+    <div class="card-content">
+        <span class="card-title">{{ pedal.name }}</span>
+        <p>Breed: {{ pedal.breed }}</p>
+        <p>Description: {{ pedal.description }}</p>
+        {% if pedal.age > 0 %}
+            <p>Age: {{ pedal.age }}</p>
+        {% else %}
+            <p>Age: Kitten</p>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}

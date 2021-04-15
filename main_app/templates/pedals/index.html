@@ -5,6 +5,7 @@
 
 {% for pedal in pedals %}
     <div class="card">
+    <a href="{% url 'details' pedal.id %}">
     <div class="card-content">
         <span class="card-title">{{ pedal.name }}</span>
         <p>Type: {{ pedal.type }}</p>
@@ -15,7 +16,9 @@
         <p>Age: Kitten</p>
         {% endif %}
     </div>
+    </a>
 </div>
 {% endfor %}
 
 {% endblock %}
+
