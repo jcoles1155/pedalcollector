@@ -6,6 +6,8 @@ from django.http import HttpResponse
 # Define the home view
 from .models import Pedal
 
+from django.views.generic.edit import CreateView, UpdateView, DeleteView
+
 
 def home(request):
     return render(request, 'home.html')
@@ -27,16 +29,19 @@ def pedals_detail(request, pedal_id):
     }
     return render(request, 'pedals/detail.html', context)
 
-# class Pedal:  # Note that parens are optional if not inheriting from another class
-#     def __init__(self, name, type, description, price):
-#         self.name = name
-#         self.type = type
-#         self.description = description
-#         self.price = price
+
+class PedalCreate(CreateView):
+    model = Pedal
+    fields = '__all__'
+    success_url = '/pedals/'
 
 
-# pedals = [
-#     Pedal('Fuzzface', 'Overdrive', 'Jimis fav', 300),
-#     Pedal('HOF', 'Reverb', 'lots of reverb sounds', 200),
-#     Pedal('Boss Compressor', 'Compressor', '10 Band compression', 40)
-# ]
+class PedalUpdate(UpdateView):
+    model = Pedal
+  # Let's disallow the renaming of a cat by excluding the name field!
+    fields = ['name', 'type', 'description', 'price']
+
+
+class PedalDelete(DeleteView):
+    model = Pedal
+    success_url = '/pedals/'

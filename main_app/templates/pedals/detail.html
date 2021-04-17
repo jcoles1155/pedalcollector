@@ -3,17 +3,40 @@
 
 <h1>Pedal Details</h1>
 
-<div class="card">
-    <div class="card-content">
+<div class="row">
+    <div class="col s6">
+    <div class="card">
+        <div class="card-content">
         <span class="card-title">{{ pedal.name }}</span>
         <p>Breed: {{ pedal.breed }}</p>
         <p>Description: {{ pedal.description }}</p>
-        {% if pedal.age > 0 %}
+            {% if pedal.age > 0 %}
             <p>Age: {{ pedal.age }}</p>
-        {% else %}
+            {% else %}
             <p>Age: Kitten</p>
-        {% endif %}
+            {% endif %}
+        </div>
+        <div class="card-action">
+            <a href="{% url 'pedals_update' pedal.id %}">Edit</a>
+            <a href="{% url 'pedals_delete' pedal.id %}">Delete</a>
+        </div>
+    </div>
+    </div>
+    <div class="col s6">
+    <table class="striped">
+        <thead>
+        <tr><th>Date</th><th>Meal</th></tr>
+        </thead>
+        <tbody>
+            {% for playedat in pedal.playedat_set.all %}
+            <tr>
+                <td>{{playedat.date}}</td>
+                <td>{{playedat.location}}</td>
+                <td>{{playedat.get_meal_display}}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
     </div>
 </div>
-
 {% endblock %}
