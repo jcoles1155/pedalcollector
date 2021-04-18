@@ -21,7 +21,7 @@ class Pedal(models.Model):
         return self.name
 
     def get_absolute_url(self):
-        return reverse('detail', kwargs={'pedal_id': self.id})
+        return reverse('details', kwargs={'pedal_id': self.id})
 
 
 class PlayedAt(models.Model):
@@ -39,3 +39,6 @@ class PlayedAt(models.Model):
 
     def __str__(self):
         return f"{self.get_show_display()} on {self.date}"
+
+    class Meta:
+        ordering = ['-date']
