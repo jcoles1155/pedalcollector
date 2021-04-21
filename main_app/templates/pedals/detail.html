@@ -45,6 +45,45 @@
     </div>
 </div>
 
+<hr />
+<div class="row">
+    <div class="col s6">
+        <h3>{{ pedal.name }}'s most used instruments</h3>
+        {% for instrument in pedal.instruments.all %}
+        <div class="card">
+        <div class="card-content">
+            <span class="card-title">
+            {{ instrument.brand }}</span> {{instrument.make }}</span> {{instrument.type}}
+            </span>
+        </div>
+        </div>
+        {% empty %}
+        <h5>No Instruments :(</h5>
+        {% endfor %}
+    </div>
+</div>
+<!-- Available instruments will come after this line -->
+<div class="col s6">
+    <h3>Available instruments</h3>
+    {% if instruments.count %} {% for instrument in instruments.all %}
+    <div class="card">
+        <div class="card-content">
+        <span class="card-title">
+            A {{ instrument.brand }}</span> {{instrument.type }}
+        </span>
+        </div>
+        <div class="card-action">
+        <form action="{% url 'assoc_instrument' pedal.id instrument.id %}" method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn">Add</button>
+        </form>
+        </div>
+    </div>
+    {% endfor %} {% else %}
+    <h5>{{pedal.name}} Already Has All instruments Available</h5>
+    {% endif %}
+</div>
+
 <script>
     var dateEl = document.getElementById('id_date');
     M.Datepicker.init(dateEl, {

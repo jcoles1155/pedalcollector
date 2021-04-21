@@ -6,6 +6,8 @@ from django.http import HttpResponse
 # Define the home view
 from .models import Pedal
 
+from .models import Instrument
+
 from .forms import PlayedAtForm
 
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
@@ -43,10 +45,14 @@ def pedals_index(request):
 
 def pedals_detail(request, pedal_id):
     pedal = Pedal.objects.get(id=pedal_id)
+    instruments_pedal_doesnt_have = Instrument.objects.exclude(
+        id__in=pedal.instruments.all().values_list('id'))
     playedat_form = PlayedAtForm()
     return render(request, 'pedals/detail.html', {
         # include the pedal and playedat_form in the context
-        'pedal': pedal, 'playedat_form': playedat_form
+        'pedal': pedal, 'playedat_form': playedat_form,
+
+        'instruments': instruments_pedal_doesnt_have
     })
 
 
@@ -61,4 +67,41 @@ def add_show(request, pedal_id):
         new_show.pedal_id = pedal_id
         new_show.save()
         print(new_show)
+    return redirect('details', pedal_id=pedal_id)
+
+
+# Instruments Views
+def instruments_index(request):
+    instruments = Instrument.objects.all()
+    context = {'instruments': instruments}
+
+    return render(request, 'instrument/index.html', context)
+
+
+def instrument_detail(request, instrument_id):
+    instrument = Instrument.objects.get(id=instrument_id)
+    context = {
+        'instrument': instrument
+    }
+    return render(request, 'instrument/detail.html', context)
+
+
+class Create_instrument(CreateView):
+    model = Instrument
+    fields = '__all__'
+
+
+class Update_instrument(UpdateView):
+    model = Instrument
+    fields = ['color']
+
+
+class Delete_instrument(DeleteView):
+    model = Instrument
+    success_url = '/instruments/'
+
+
+def assoc_instrument(request, pedal_id, instrument_id):
+    # Note that you can pass a instrument's id instead of the whole object
+    Pedal.objects.get(id=pedal_id).instruments.add(instrument_id)
     return redirect('details', pedal_id=pedal_id)

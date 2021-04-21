@@ -11,5 +11,19 @@ urlpatterns = [
          views.PedalUpdate.as_view(), name='pedals_update'),
     path('pedals/<int:pk>/delete/',
          views.PedalDelete.as_view(), name='pedals_delete'),
-    path('pedals/<int:pedal_id>/add_show/', views.add_show, name='add_show')
+    path('pedals/<int:pedal_id>/add_show/', views.add_show, name='add_show'),
+    path('pedals/<int:pedal_id>/assoc_instrument/<int:instrument_id>/',
+         views.assoc_instrument, name='assoc_instrument'),
+
+
+    # instrument urls
+    path('instruments/', views.instruments_index, name='all_instruments'),
+    path('instruments/<int:instrument_id>/',
+         views.instrument_detail, name='instrument_detail'),
+    path('instruments/create/', views.Create_instrument.as_view(),
+         name='create_instrument'),
+    path('instruments/<int:pk>/update/',
+         views.Update_instrument.as_view(), name='update_instrument'),
+    path('instruments/<int:pk>/delete/',
+         views.Delete_instrument.as_view(), name='delete_instrument'),
 ]

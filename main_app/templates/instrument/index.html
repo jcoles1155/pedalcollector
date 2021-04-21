@@ -1,0 +1,23 @@
+{% for instrument in instruments %}
+
+    <div class="card">
+    <a href="{% url 'instrument_detail' instrument.id %}">
+    <div class="card-content">
+        <span class="card-title">{{ instrument.type }}</span>
+        <p>Brand: {{ instrument.brand }}</p>
+        <p>Make: {{ instrument.make }}</p>
+    </div>
+    </a>
+    </div>
+    {% comment %} 
+        if there is no elemnts in our list will  display no instruments
+    {% endcomment %}
+    {% empty %} 
+
+    <div class="card">
+        <div class="card-content">
+        <span class="card-title">No instruments</span>
+        </div>
+    </div>
+
+{% endfor %}  
