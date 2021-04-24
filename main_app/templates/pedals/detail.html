@@ -5,57 +5,69 @@
 
 <div class="row">
     <div class="col s6">
-    <div class="card">
-        <div class="card-content">
-        <span class="card-title">{{ pedal.name }}</span>
-        <p>Type: {{ pedal.type }}</p>
-        <p>Description: {{ pedal.description }}</p>
-            {% if pedal.price > 0 %}
-            <p>Price: {{ pedal.price }}</p>
-            {% else %}
-            <p>Price: Unknown</p>
-            {% endif %}
-        </div>
-        <div class="card-action">
-            <a href="{% url 'pedals_update' pedal.id %}">Edit</a>
-            <a href="{% url 'pedals_delete' pedal.id %}">Delete</a>
+        <div class="card">
+            <div class="card-content">
+            <span class="card-title">{{ pedal.name }}</span>
+            <p>Type: {{ pedal.type }}</p>
+            <p>Description: {{ pedal.description }}</p>
+                {% if pedal.price > 0 %}
+                <p>Price: {{ pedal.price }}</p>
+                {% else %}
+                <p>Price: Unknown</p>
+                {% endif %}
+            </div>
+            <div class="card-action">
+                <a href="{% url 'pedals_update' pedal.id %}">Edit</a>
+                <a href="{% url 'pedals_delete' pedal.id %}">Delete</a>
+            </div>
         </div>
     </div>
-    </div>
+        
     <div class="col s6">
         <form action="{% url 'add_show' pedal.id %}" method="post">
             {% csrf_token %}
             {{ playedat_form.as_p }}
             <input type="submit" class="btn" value="Add Show">
         </form>
-    <table class="striped">
-        <thead>
-        <tr><th>Date</th><th>Location</th><th>Type of Show</th></tr>
-        </thead>
-        <tbody>
-            {% for playedat in pedal.playedat_set.all %}
-            <tr>
-                <td>{{playedat.date}}</td>
-                <td>{{playedat.location}}</td>
-                <td>{{playedat.get_show_display}}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+        <table class="striped">
+            <thead>
+            <tr><th>Date</th><th>Location</th><th>Type of Show</th></tr>
+            </thead>
+            <tbody>
+                {% for playedat in pedal.playedat_set.all %}
+                <tr>
+                    <td>{{playedat.date}}</td>
+                    <td>{{playedat.location}}</td>
+                    <td>{{playedat.get_show_display}}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
 </div>
+    {% for photo in pedal.photo_set.all %}
+        <img class="responsive-img card-panel" src="{{photo.url}}">
+    {% empty %}
+        <div class="card-panel teal-text center-align">No Photos Uploaded</div>
+    {% endfor %}
 
+    <form action="{% url 'add_photo' pedal.id %}" enctype="multipart/form-data" method="POST" class="card-panel">
+        {% csrf_token %}
+        <input type="file" name="photo-file">
+        <br><br>
+        <input type="submit" class="btn" value="Upload Photo">
+    </form>
 <hr />
 <div class="row">
     <div class="col s6">
         <h3>{{ pedal.name }}'s most used instruments</h3>
         {% for instrument in pedal.instruments.all %}
         <div class="card">
-        <div class="card-content">
-            <span class="card-title">
-            {{ instrument.brand }}</span> {{instrument.make }}</span> {{instrument.type}}
-            </span>
-        </div>
+            <div class="card-content">
+                <span class="card-title">
+                {{ instrument.brand }}</span> {{instrument.make }}</span> {{instrument.type}}
+                </span>
+            </div>
         </div>
         {% empty %}
         <h5>No Instruments :(</h5>
@@ -68,15 +80,15 @@
     {% if instruments.count %} {% for instrument in instruments.all %}
     <div class="card">
         <div class="card-content">
-        <span class="card-title">
-            A {{ instrument.brand }}</span> {{instrument.type }}
-        </span>
+            <span class="card-title">
+                A {{ instrument.brand }}</span> {{instrument.type }}
+            </span>
         </div>
         <div class="card-action">
-        <form action="{% url 'assoc_instrument' pedal.id instrument.id %}" method="post">
-            {% csrf_token %}
-            <button type="submit" class="btn">Add</button>
-        </form>
+            <form action="{% url 'assoc_instrument' pedal.id instrument.id %}" method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn">Add</button>
+            </form>
         </div>
     </div>
     {% endfor %} {% else %}
