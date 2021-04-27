@@ -4,19 +4,33 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse
 
 # Define the home view
-from .models import Pedal
-
-from .models import Instrument
+from .models import Pedal, Instrument, Photo
 
 from .forms import PlayedAtForm
 
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from django.contrib.auth import login
+from django.contrib.auth.forms import UserCreationForm
+
+from django.contrib.auth.decorators import login_required
+
+import uuid
+import boto3
+
+S3_BASE_URL = 's3-us-west-1.amazonaws.com'
+BUCKET = 'pedalcollector'
 
 
 class PedalCreate(CreateView):
     model = Pedal
-    fields = '__all__'
-    success_url = '/pedals/'
+    fields = ['name', 'type', 'description', 'price']
+
+    # valid pedal form is being submitted
+    def form_valid(self, form):
+        # Assign the logged in user (self.request.user)
+        form.instance.user = self.request.user  # form.instance is the pedal
+        # Let the CreateView do its job as usual
+        return super().form_valid(form)
 
 
 class PedalUpdate(UpdateView):
@@ -37,9 +51,9 @@ def home(request):
 def about(request):
     return render(request, 'about.html')
 
-
+@login_required
 def pedals_index(request):
-    pedals = Pedal.objects.all()
+    pedals = Pedal.objects.filter(user=request.user)
     return render(request, 'pedals/index.html', {'pedals': pedals})
 
 
@@ -105,3 +119,43 @@ def assoc_instrument(request, pedal_id, instrument_id):
     # Note that you can pass a instrument's id instead of the whole object
     Pedal.objects.get(id=pedal_id).instruments.add(instrument_id)
     return redirect('details', pedal_id=pedal_id)
+
+
+def add_photo(request, pedal_id):
+    # photo-file will be the "name" attribute on the <input type="file">
+    photo_file = request.FILES.get('photo-file', None)
+    if photo_file:
+        s3 = boto3.client('s3')
+        # need a unique "key" for S3 / needs image file extension too
+        key = uuid.uuid4().hex[:6] + \
+            photo_file.name[photo_file.name.rfind('.'):]
+        # just in case something goes wrong
+        try:
+            s3.upload_fileobj(photo_file, BUCKET, key)
+            # build the full url string
+            url = f"{S3_BASE_URL}{BUCKET}/{key}"
+            # we can assign to pedal_id or pedal (if you have a pedal object)
+            photo = Photo(url=url, pedal_id=pedal_id)
+            photo.save()
+        except:
+            print('An error occurred uploading file to S3')
+    return redirect('details', pedal_id=pedal_id)
+
+def signup(request):
+    error_message = ''
+    if request.method == 'POST':
+        # This is how to create a 'user' form object
+        # that includes the data from the browser
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            # This will add the user to the database
+            user = form.save()
+            # This is how we log a user in via code
+            login(request, user)
+            return redirect('index')
+        else:
+            error_message = 'Invalid sign up - try again'
+    # A bad POST or a GET request, so render signup.html with an empty form
+    form = UserCreationForm()
+    context = {'form': form, 'error_message': error_message}
+    return render(request, 'registration/signup.html', context)

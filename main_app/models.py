@@ -2,6 +2,8 @@ from django.db import models
 
 from django.urls import reverse
 
+from django.contrib.auth.models import User
+
 # Create your models here.
 
 SHOWS = (
@@ -33,6 +35,8 @@ class Pedal(models.Model):
     price = models.IntegerField()
 
     instruments = models.ManyToManyField(Instrument)
+    # Add the foreign key linking to a user instance
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.name
@@ -59,3 +63,11 @@ class PlayedAt(models.Model):
 
     class Meta:
         ordering = ['-date']
+
+
+class Photo(models.Model):
+    url = models.CharField(max_length=200)
+    pedal = models.ForeignKey(Pedal, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"Photo for pedal_id: {self.pedal_id} @{self.url}"
